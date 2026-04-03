@@ -17,11 +17,12 @@ contract DiamondCutFacet is IDiamondCut {
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
     function diamondCut(
-        FacetCut[] calldata _diamondCut,
+        IDiamondCut.FacetCut[] calldata _diamondCut,
         address _init,
         bytes calldata _calldata
     ) external override {
-        LibDiamond.enforceIsContractOwner();
+        require(msg.sender == address(this), "DiamondCut: Must be through multisig");
         LibDiamond.diamondCut(_diamondCut, _init, _calldata);
     }
+
 }

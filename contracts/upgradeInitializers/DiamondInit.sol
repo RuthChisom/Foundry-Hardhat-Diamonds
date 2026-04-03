@@ -49,7 +49,18 @@ contract DiamondInit {
         
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC721).interfaceId] = true;
+        ds.supportedInterfaces[type(IDiamondCut).interfaceId] = true;
         ds.supportedInterfaces[type(IERC721Metadata).interfaceId] = true;
+    }
+
+    function initGovernance(address[] memory _owners, uint256 _required, address _stakingToken) external {
+        require(_owners.length >= _required, "DiamondInit: Threshold > owners");
+        for (uint256 i = 0; i < _owners.length; i++) {
+            s.multisigOwners.push(_owners[i]);
+            s.isMultisigOwner[_owners[i]] = true;
+        }
+        s.requiredConfirmations = _required;
+        s.stakingToken = _stakingToken;
     }
 
 
