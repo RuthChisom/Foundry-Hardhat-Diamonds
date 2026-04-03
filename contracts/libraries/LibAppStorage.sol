@@ -9,6 +9,17 @@ struct Proposal {
     uint256 confirmations;
 }
 
+struct Listing {
+    address seller;
+    uint256 price;
+}
+
+struct Loan {
+    address lender;
+    address borrower;
+    uint256 expires;
+}
+
 struct AppStorage {
     // ERC721
     string name;
@@ -19,7 +30,15 @@ struct AppStorage {
     mapping(address => mapping(address => bool)) operatorApprovals;
     uint256 totalSupply;
 
-    // ERC20 & Staking
+    // ERC20
+    string erc20Name;
+    string erc20Symbol;
+    uint8 decimals;
+    uint256 erc20TotalSupply;
+    mapping(address => uint256) erc20Balances;
+    mapping(address => mapping(address => uint256)) erc20Allowances;
+
+    // Staking
     address stakingToken;
     mapping(address => uint256) stakedBalance;
     mapping(address => uint256) lastStakeTime;
@@ -35,6 +54,12 @@ struct AppStorage {
 
     // SVG
     string baseSvg;
+
+    // Marketplace
+    mapping(uint256 => Listing) listings;
+
+    // Borrowing
+    mapping(uint256 => Loan) loans;
 }
 
 library LibAppStorage {

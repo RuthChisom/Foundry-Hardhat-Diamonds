@@ -63,5 +63,11 @@ contract DiamondInit {
         s.stakingToken = _stakingToken;
     }
 
+    function initERC20(string memory _name, string memory _symbol, uint8 _decimals) external {
+        s.erc20Name = _name;
+        s.erc20Symbol = _symbol;
+        s.decimals = _decimals;
+    }
+
 
 }

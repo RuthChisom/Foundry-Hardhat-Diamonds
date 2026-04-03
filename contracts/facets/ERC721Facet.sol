@@ -5,54 +5,58 @@ import {AppStorage, LibAppStorage} from "../libraries/LibAppStorage.sol";
 import {IERC721, IERC721TokenReceiver} from "../interfaces/IERC721.sol";
 import {LibDiamond} from "../libraries/LibDiamond.sol";
 
-contract ERC721Facet is IERC721 {
+contract ERC721Facet {
     AppStorage internal s;
 
-    function balanceOf(address _owner) external view override returns (uint256) {
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
+    event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);
+    event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+
+    function erc721BalanceOf(address _owner) external view returns (uint256) {
         require(_owner != address(0), "ERC721: balance query for the zero address");
         return s.balances[_owner];
     }
 
-    function ownerOf(uint256 _tokenId) external view override returns (address) {
+    function ownerOf(uint256 _tokenId) external view returns (address) {
         address owner = s.owners[_tokenId];
         require(owner != address(0), "ERC721: owner query for nonexistent token");
         return owner;
     }
 
-    function approve(address _to, uint256 _tokenId) external override {
+    function erc721Approve(address _to, uint256 _tokenId) external {
         address owner = s.owners[_tokenId];
         require(msg.sender == owner || s.operatorApprovals[owner][msg.sender], "ERC721: approve caller is not owner nor approved for all");
         s.tokenApprovals[_tokenId] = _to;
         emit Approval(owner, _to, _tokenId);
     }
 
-    function getApproved(uint256 _tokenId) external view override returns (address) {
+    function getApproved(uint256 _tokenId) external view returns (address) {
         require(s.owners[_tokenId] != address(0), "ERC721: approved query for nonexistent token");
         return s.tokenApprovals[_tokenId];
     }
 
-    function setApprovalForAll(address _operator, bool _approved) external override {
+    function setApprovalForAll(address _operator, bool _approved) external {
         require(_operator != msg.sender, "ERC721: approve to caller");
         s.operatorApprovals[msg.sender][_operator] = _approved;
         emit ApprovalForAll(msg.sender, _operator, _approved);
     }
 
-    function isApprovedForAll(address _owner, address _operator) external view override returns (bool) {
+    function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
         return s.operatorApprovals[_owner][_operator];
     }
 
-    function transferFrom(address _from, address _to, uint256 _tokenId) public override {
+    function erc721TransferFrom(address _from, address _to, uint256 _tokenId) public {
         address owner = s.owners[_tokenId];
         require(_isApprovedOrOwner(msg.sender, _tokenId), "ERC721: transfer caller is not owner nor approved");
         _transfer(_from, _to, _tokenId);
     }
 
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external override {
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external {
         this.safeTransferFrom(_from, _to, _tokenId, "");
     }
 
-    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) public override {
-        transferFrom(_from, _to, _tokenId);
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata _data) public {
+        erc721TransferFrom(_from, _to, _tokenId);
         require(_checkOnERC721Received(_from, _to, _tokenId, _data), "ERC721: transfer to non ERC721Receiver implementer");
     }
 

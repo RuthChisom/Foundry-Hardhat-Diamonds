@@ -73,13 +73,13 @@ contract ERC721Test is Test, IDiamondCut {
 
         ERC721Facet(address(diamond)).mint(user1, tokenId);
         assertEq(ERC721Facet(address(diamond)).ownerOf(tokenId), user1);
-        assertEq(ERC721Facet(address(diamond)).balanceOf(user1), 1);
+        assertEq(ERC721Facet(address(diamond)).erc721BalanceOf(user1), 1);
 
         vm.prank(user1);
-        ERC721Facet(address(diamond)).transferFrom(user1, user2, tokenId);
+        ERC721Facet(address(diamond)).erc721TransferFrom(user1, user2, tokenId);
         assertEq(ERC721Facet(address(diamond)).ownerOf(tokenId), user2);
-        assertEq(ERC721Facet(address(diamond)).balanceOf(user1), 0);
-        assertEq(ERC721Facet(address(diamond)).balanceOf(user2), 1);
+        assertEq(ERC721Facet(address(diamond)).erc721BalanceOf(user1), 0);
+        assertEq(ERC721Facet(address(diamond)).erc721BalanceOf(user2), 1);
     }
 
     function generateSelectors(string memory _facetName) internal returns (bytes4[] memory selectors) {
